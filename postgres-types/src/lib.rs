@@ -125,6 +125,34 @@
 //!     Happy,
 //! }
 //! ```
+//!
+//! ## Allowing Enum Mismatches
+//!
+//! By default the generated implementation of [`ToSql`] & [`FromSql`] for enums will require an exact match of the enum
+//! variants between the Rust and Postgres types.
+//! To allow mismatches, the `#[postgres(allow_mismatch)]` attribute can be used on the enum definition:
+//!
+//! ```sql
+//! CREATE TYPE mood AS ENUM (
+//!   'Sad',
+//!   'Ok',
+//!   'Happy'
+//! );
+//! ```
+//!
+//! ```rust
+//! # #[cfg(feature = "derive")]
+//! use postgres_types::{ToSql, FromSql};
+//!
+//! # #[cfg(feature = "derive")]
+//! #[derive(Debug, ToSql, FromSql)]
+//! #[postgres(allow_mismatch)]
+//! enum Mood {
+//!    Sad,
+//!    Happy,
+//!    Meh,
+//! }
+//! ```
 #![doc(html_root_url = "https://docs.rs/postgres-types/0.2")]
 #![warn(clippy::all, rust_2018_idioms, missing_docs)]
 

@@ -4,6 +4,7 @@ use syn::{Attribute, Error, Expr, ExprLit, Lit, Meta, Token};
 pub struct Overrides {
     pub name: Option<String>,
     pub transparent: bool,
+    pub allow_mismatch: bool,
 }
 
 impl Overrides {
@@ -11,6 +12,7 @@ impl Overrides {
         let mut overrides = Overrides {
             name: None,
             transparent: false,
+            allow_mismatch: false,
         };
 
         for attr in attrs {
@@ -44,11 +46,13 @@ impl Overrides {
                         overrides.name = Some(value);
                     }
                     Meta::Path(path) => {
-                        if !path.is_ident("transparent") {
+                        if path.is_ident("transparent") {
+                            overrides.transparent = true;
+                        } else if path.is_ident("allow_mismatch") {
+                            overrides.allow_mismatch = true;
+                        } else {
                             return Err(Error::new_spanned(path, "unknown override"));
                         }
-
-                        overrides.transparent = true;
                     }
                     bad => return Err(Error::new_spanned(bad, "unknown attribute")),
                 }

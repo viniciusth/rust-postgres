@@ -31,13 +31,17 @@ pub fn domain_body(name: &str, field: &syn::Field) -> TokenStream {
     }
 }
 
-pub fn enum_body(name: &str, variants: &[Variant]) -> TokenStream {
+pub fn enum_body(name: &str, variants: &[Variant], allow_mismatch: bool) -> TokenStream {
     let num_variants = variants.len();
     let variant_names = variants.iter().map(|v| &v.name);
 
     quote! {
         if type_.name() != #name {
             return false;
+        }
+
+        if #allow_mismatch {
+            return true;
         }
 
         match *type_.kind() {
